@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	A3-R-HQ
+#	A4-HQ-DC
 #
 ################## General section ##################
 function pause(){
@@ -20,7 +20,7 @@ NC='\033[0m'
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A1 General configuration (if R-HQ is random machine)"
+echo "Marking A1 General configuration (if HQ-DC is random machine)"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -39,7 +39,7 @@ echo "Hostname, network config and timezone"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( hostname  | grep -ic "R-HQ") = 1 ]
+	if [  $( hostname  | grep -ic "HQ-DC") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
@@ -47,10 +47,10 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			hostname
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct hostname is: R-HQ"$NC
+				echo -e $YELLOW"Correct hostname is: HQ-DC"$NC
 	fi
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.2/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.30.1/24") = 1 ]
+	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.11/24") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -58,7 +58,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 203.0.113.2/29 & 10.1.10.1/24 & 10.1.20.1/24 & 10.1.30.1/24"$NC
+				echo -e $YELLOW"Must contain 10.1.10.11/24"$NC
 	fi	
 
 	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
@@ -99,7 +99,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "IF this is a random router!!!"
+echo "IF this is a random server!!!"
 echo "NTP"
 echo -e "######################################################################################"$NC
 echo ""
@@ -122,7 +122,7 @@ echo ""
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A3-R-HQ"
+echo "Marking A4-HQ-DC"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -134,144 +134,20 @@ echo ""
 
 
 
-echo -e $PURPLE"######################################################################################"
-echo "J1 - Firewall: public services"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "J2 - Firewall: traffic"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table filter
-echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
-echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo ""
 echo ""
 echo -e $PURPLE"######################################################################################"
-echo "J3 - Site-to-site VPN: security"
+echo "M1 - Root CA"
 echo -e "######################################################################################"$NC
-echo ""
 
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is site-to-site VPN with R-BR?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ and C=DK,O=Lego APS,CN=R-BR"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-
-
-echo ""
-echo ""
-echo -e $PURPLE"######################################################################################"
-echo "J4 - Remote access VPN: security"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is a client-to-site VPN with R-HQ?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M1 - Firewall: SNAT"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Traffic from 10.1.10.0/24, 10.1.20.0/24 and 10.1.30.0/24 towards internet is masqueraded?"$NC
-echo ""
-echo -e $GREEN"IF YES, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M2 - Site-to-site VPN: working"
-echo -e "######################################################################################"$NC
-echo ""
-echo -e $YELLOW"Testing... Please wait."$NC
-
-	if [  $( ping 10.2.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.1.10.0/24.*tun") = 1 ]
+	if [ $(openssl x509 -in /ca/CA.crt -text -noout | grep -ic "Subject:.*C = DK.*O = Lego APS.*CN = Lego APS Root CA" ) = 1 ]
 	then  
-		 echo -e $GREEN"OK - Site-to-site VPN: working"$NC
+		 echo -e $GREEN"OK - Root CA"$NC
 	else
-		 echo -e $RED"FAILED - Site-to-site VPN: working"$NC
+		 echo -e $RED"FAILED - Root CA"$NC
 			echo "-----------------------------------------------------------------"
-			ping 10.2.10.11 -c 4
+			openssl x509 -in /ca/CA.crt -text -noout | grep -ic "Subject:"
 			echo "-----------------------------------------------------------------"
-			echo "-----------------------------------------------------------------"
-			ip r | grep -c "10.1.10.0/24"
-			echo "-----------------------------------------------------------------"
-			echo -e $YELLOW"Correct output: Not 100% packet loss and route to 10.1.10.0/24 through iface tun."$NC
+			echo -e $YELLOW"Correct output: Should be Subject: C = DK, O = Lego APS, CN = Lego APS Root CA"$NC
 	fi
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -280,6 +156,99 @@ echo ""
 
 
 
+echo ""
+echo -e $PURPLE"######################################################################################"
+echo "M2 - LDAP server: structure"
+echo -e "######################################################################################"$NC
+
+	echo -e $YELLOW"Checking LDAP implementation"$NC
+	ldap=0
+	if [  $( ldapsearch -x -b dc=lego,dc=dk -H ldapi:/// |grep -c "result: 0 Success" ) = 1 ]
+	then  
+		 ldap=1
+		 echo -e $GREEN"OK - LDAP server implemented"$NC
+	else
+		 echo -e $RED"FAILED - LDAP server not implemented"$NC
+			echo "-----------------------------------------------------------------"
+			ldapsearch -x -b dc=lego,dc=dk -H ldapi:///
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct output:"
+				echo -e "Query successful"$NC
+	fi
+	echo -e $YELLOW"Checking LDAP objects"$NC
+	ldapobjects=0
+	#LDAP OUs
+	if [ $( ldapsearch -x -b "ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "ou=Herning,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	#LDAP Groups
+	if [ $( ldapsearch -x -b "cn=admins,ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "cn=billund,ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "cn=herning,ou=Herning,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	#LDAP Users
+	if [ $( ldapsearch -x -b "uid=admin,cn=admins,ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "uid=frida,cn=billund,ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "uid=ella,cn=billund,ou=Billund,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+	if [ $( ldapsearch -x -b "uid=carl,cn=herning,ou=Herning,dc=lego,dc=dk" -H ldapi:/// |grep -c -e "result: 0 Success" ) = 1 ]
+	then
+		ldapobjects=$((ldapobjects+1))
+	fi
+
+	if [  $ldap = 1 && $ldapobjects = 9]
+	then
+ 		 echo -e $GREEN"LDAP server implemented and there are $ldapobjects./9 correct LDAP objects"$NC
+	elif  [  $ldap = 1 ] 
+	then
+		 echo -e $YELLOW"LDAP server implemented and there are $ldapobjects./9 correct LDAP objects"$NC
+	else
+		 echo -e $RED"FAILED - LDAP server not implemented"$NC
+	fi
+
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+
+echo ""
+echo -e $PURPLE"######################################################################################"
+echo "M3 - LDAP server: security"
+echo -e "######################################################################################"$NC
+
+	if [ $(openssl s_client -connect localhost:636 | grep -c "return code: 0 (ok)") = 1 ]
+	then  
+		 echo -e $GREEN"OK - LDAP server: security"$NC
+	else
+		 echo -e $RED"FAILED - LDAP server: security"$NC
+				echo -e $YELLOW"Correct output:"
+				echo -e "Should be return code: 0 (ok)."$NC
+	fi
 
 
 
@@ -287,14 +256,10 @@ echo ""
 
 
 
-
-
-
-
-
-
-
-
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 
