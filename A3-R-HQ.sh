@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	A2-HOME
+#	A3-R-HQ
 #
 ################## General section ##################
 function pause(){
@@ -20,7 +20,7 @@ NC='\033[0m'
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A1 General configuration (if HOME is random machine)"
+echo "Marking A1 General configuration (if R-HQ is random machine)"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -39,7 +39,7 @@ echo "Hostname, network config and timezone"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( hostname  | grep -ic "HOME") = 1 ]
+	if [  $( hostname  | grep -ic "R-HQ") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
@@ -47,10 +47,10 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			hostname
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct hostname is: HOME"$NC
+				echo -e $YELLOW"Correct hostname is: R-HQ"$NC
 	fi
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.114.50/25") = 1 ] 
+	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.2/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.30.1/24") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -58,7 +58,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 203.0.114.50/25"$NC
+				echo -e $YELLOW"Must contain 203.0.113.2/29 & 10.1.10.1/24 & 10.1.20.1/24 & 10.1.30.1/24"$NC
 	fi	
 
 	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
@@ -99,7 +99,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "IF this is a random server!!!"
+echo "IF this is a random router!!!"
 echo "NTP"
 echo -e "######################################################################################"$NC
 echo ""
@@ -122,7 +122,7 @@ echo ""
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A2-HOME"
+echo "Marking A3-R-HQ"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -132,6 +132,40 @@ pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
+
+
+
+
+
+
+
+
+
+echo ""
+echo ""
+echo -e $PURPLE"######################################################################################"
+echo "J4 - Remote access VPN: security"
+echo -e "######################################################################################"$NC
+echo ""
+
+echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo -e $YELLOW"Are your ready?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $YELLOW"See the next output:"$NC
+    ipsec statusall
+echo -e $YELLOW"Is a client-to-site VPN with R-HQ?"$NC
+echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS, CN=R-HQ"$NC
+echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
+echo ""
+echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 
