@@ -262,40 +262,18 @@ echo "M4 - DNS: Secondary herning.lego.dk zones"
 echo -e "######################################################################################"$NC
 echo ""
 
-	counter=0
-    if [  $( dig www.herning.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20.11" ) = 1 ]
+    if [  $( dig www.herning.lego.dk @10.1.20.11 | grep -c "www.herning.lego.dk.*10.2.10.11" ) = 1 ] && [  $( dig 10.2.10.11 @10.1.20.11 | grep -c "10.2.10.11.*www.herning.lego.dk" ) = 1 ] && [ $( grep -r 'zone.*herning.lego.dk' /etc/bind/ | grep -c "slave" ) = 1 ] && [ $( grep -r 'zone.*10.2.10.in-addr.arpa' /etc/bind/ | grep -c "slave" ) = 1 ]
     then
-        counter=$((counter+1))
-    else
-        echo -e $RED"FAILED"$NC
-		echo "-----------------------------------------------------------------"
-		dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk"
-		echo "-----------------------------------------------------------------"
-		echo -e $YELLOW"Correct output:"
-		echo -e "www.billund.lego.dk XXXX IN A 10.1.20.11"$NC
-    fi
-	if [  $( dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk.*10.1.20.12" ) = 1 ]
-    then
-        counter=$((counter+1))
-    else
-        echo -e $RED"FAILED"$NC
-		echo "-----------------------------------------------------------------"
-		dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk"
-		echo "-----------------------------------------------------------------"
-		echo -e $YELLOW"Correct output:"
-		echo -e "mail.billund.lego.dk XXXX IN A 10.1.20.12"$NC
-    fi
-
-	if [  $counter = 2 ]
-	then  
-		 echo -e $GREEN"OK - DNS: billund.lego.dk forward zone"$NC
-	elif [  $counter = 1 ]
-	then 
-		 echo -e $YELLOW"PARTIAL - DNS: billund.lego.dk forward zone - Only one record correct"$NC
+    	 echo -e $GREEN"OK - DNS: Secondary herning.lego.dk zones"$NC
 	else
-		 echo -e $RED"FAILED - DNS: billund.lego.dk forward zone"$NC
-				echo -e $YELLOW"Correct output:"
-				echo -e "Some records not exists."$NC
+		echo -e $RED"FAILED - DNS: Secondary herning.lego.dk zones"$NC
+		dig www.herning.lego.dk @10.1.20.11 | grep -c "www.herning.lego.dk.*10.2.10.11"
+		grep -r 'zone.*herning.lego.dk' /etc/bind/ | grep -c "slave"
+		dig 10.2.10.11 @10.1.20.11 | grep -c "10.2.10.11.*www.herning.lego.dk"
+		grep -r 'zone.*10.2.10.in-addr.arpa' /etc/bind/ | grep -c "slave"		
+				echo -e $YELLOW"Correct output:"$NC
+				echo -e $YELLOW"www.herning.lego.dk IN A 10.2.10.11 && zone herning.lego.dk slave"$NC
+				echo -e $YELLOW"10.2.10.11 IN PTR www.herning.lego.dk && zone 10.2.10.in-addr.arpa slave"$NC
 	fi
 
 
@@ -305,10 +283,60 @@ clear
 echo ""
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M5 - HA web server: web server"
+echo -e "######################################################################################"$NC
+echo ""
+
+    if [  $( curl -I http://localhost | grep -c "301 Moved Permanently" ) = 1 ] && [  $( curl -I https://localhost | grep -c "200" ) = 1 ] && [  $( sleep 5 | openssl s_client -connect localhost:443 -showcerts 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA.*") = 1 ]
+    then
+    	 echo -e $GREEN"OK - HA web server: web server"$NC
+	else
+		echo -e $RED"FAILED - HA web server: web server"$NC
+			curl -I http://localhost | grep -c "301 Moved Permanently"
+			curl -I https://localhost
+			openssl s_client -connect localhost:443 -showcerts 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA"
+			echo -e $YELLOW"Correct output:"
+			echo -e "301 Moved permanently and 200 OK and certificate issuer C = DK, O = Lego APS, CN = Lego APS Intermediate CA"$NC
+	fi
 
 
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M6 - HA web server: HA"
+echo -e "######################################################################################"$NC
+echo ""
+
+    
+	echo -e $YELLOW"Look at the following output. Should say 'Served by HQ-DMZ-X':"$NC
+	curl -I https://localhost | grep "HQ-DMZ"
+	echo -e $YELLOW"Please, stop webserver on HQ-DMZ-1 machine."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Look at the following output. Should say 'Served by HQ-DMZ-2':"$NC
+	curl -I https://localhost | grep "HQ-DMZ"
+	echo -e $YELLOW"Please, stop webserver on HQ-DMZ-2 machine."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Look at the following output. It should be empty (both webservers are stopped):"$NC
+	curl -I https://localhost | grep "HQ-DMZ"
+	echo -e $YELLOW"Please, start webserver on HQ-DMZ-1 machine."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Look at the following output. Should say 'Served by HQ-DMZ-1':"$NC
+	curl -I https://localhost | grep "HQ-DMZ"
+	echo -e $YELLOW"Please, start webserver on HQ-DMZ-2 machine."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $GREEN"OK - HA web server: HA - If the process has been succesful"$NC
+	echo -e $RED"FAILED - HA web server: HA - If the process has FAILED in some point"$NC
+	
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 

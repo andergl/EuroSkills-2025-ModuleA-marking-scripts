@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	A3-R-HQ
+#	A8-HQ-DMZ-2
 #
 ################## General section ##################
 function pause(){
@@ -20,7 +20,7 @@ NC='\033[0m'
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A1 General configuration (if R-HQ is random machine)"
+echo "Marking A1 General configuration (if HQ-DMZ-2 is random machine)"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -39,7 +39,7 @@ echo "Hostname, network config and timezone"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( hostname  | grep -ic "R-HQ") = 1 ]
+	if [  $( hostname  | grep -ic "HQ-DMZ-2") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
@@ -47,10 +47,10 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			hostname
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct hostname is: R-HQ"$NC
+				echo -e $YELLOW"Correct hostname is: HQ-DMZ-2"$NC
 	fi
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.2/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.30.1/24") = 1 ]
+	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.12/24") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -58,7 +58,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 203.0.113.2/29 & 10.1.10.1/24 & 10.1.20.1/24 & 10.1.30.1/24"$NC
+				echo -e $YELLOW"Must contain 10.1.20.12/24"$NC
 	fi	
 
 	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
@@ -99,7 +99,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "IF this is a random router!!!"
+echo "IF this is a random server!!!"
 echo "NTP"
 echo -e "######################################################################################"$NC
 echo ""
@@ -122,7 +122,7 @@ echo ""
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A3-R-HQ"
+echo "Marking A8-HQ-DMZ-2"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -131,148 +131,59 @@ echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
+
 
 
 
 echo -e $PURPLE"######################################################################################"
-echo "J1 - Firewall: public services"
+echo "M1 - Email server: SMTP"
 echo -e "######################################################################################"$NC
 echo ""
 
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "J2 - Firewall: traffic"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table filter
-echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
-echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo ""
-echo ""
-echo -e $PURPLE"######################################################################################"
-echo "J3 - Site-to-site VPN: security"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is site-to-site VPN with R-BR?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ and C=DK,O=Lego APS,CN=R-BR"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-
-
-echo ""
-echo ""
-echo -e $PURPLE"######################################################################################"
-echo "J4 - Remote access VPN: security"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is a client-to-site VPN with R-HQ?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M1 - Firewall: SNAT"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Traffic from 10.1.10.0/24, 10.1.20.0/24 and 10.1.30.0/24 towards internet is masqueraded?"$NC
-echo ""
-echo -e $GREEN"IF YES, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M2 - Site-to-site VPN: working"
-echo -e "######################################################################################"$NC
-echo ""
-echo -e $YELLOW"Testing... Please wait."$NC
-
-	if [  $( ping 10.2.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.2.10.0/24.*tun") = 1 ]
+    
+	if [ $( echo 'QUIT' | nc -w 5 localhost 587 | grep -c 220 ) = 1 ] && [ $( sleep 5 | openssl s_client -connect localhost:587 -starttls smtp 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
 	then  
-		 echo -e $GREEN"OK - Site-to-site VPN: working"$NC
+		 echo -e $GREEN"OK - Email server: SMTP"$NC
 	else
-		 echo -e $RED"FAILED - Site-to-site VPN: working"$NC
+		 echo -e $RED"FAILED - Email server: SMTP"$NC
 			echo "-----------------------------------------------------------------"
-			ping 10.2.10.11 -c 4
-			echo "-----------------------------------------------------------------"
-			echo "-----------------------------------------------------------------"
-			ip r | grep -c "10.2.10.0/24"
-			echo "-----------------------------------------------------------------"
-			echo -e $YELLOW"Correct output: Not 100% packet loss and route to 10.2.10.0/24 through iface tun."$NC
+			echo 'QUIT' | nc -w 5 localhost 587 | grep -c 220
+			sleep 5 | openssl s_client -connect localhost:587 -starttls smtp 2> /dev/null | grep -c "issuer="
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct output:"$NC
+				echo -e $YELLOW"Connection successful"$NC
+				echo -e $YELLOW"issuer=C = DK, O = Lego APS, CN = Lego APS Intermediate CA"$NC
 	fi
+
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M2 - Email server: IMAP"
+echo -e "######################################################################################"$NC
+echo ""
+
+    
+	if [ $( echo -e 'CLOSE\nCLOSE\nCLOSE' | nc -w 5 localhost 143 | grep -c OK ) = 1 ] && [ $( sleep 5 | openssl s_client -connect localhost:143 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
+	then  
+		 echo -e $GREEN"OK - Email server: SMTP"$NC
+	else
+		 echo -e $RED"FAILED - Email server: SMTP"$NC
+			echo "-----------------------------------------------------------------"
+			echo -e 'CLOSE\nCLOSE\nCLOSE' | nc -w 5 localhost 143 | grep -c OK
+			sleep 5 | openssl s_client -connect localhost:143 2> /dev/null | grep -c "issuer="
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct output:"$NC
+				echo -e $YELLOW"Connection successful"$NC
+				echo -e $YELLOW"issuer=C = DK, O = Lego APS, CN = Lego APS Intermediate CA"$NC
+	fi
+
+
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
@@ -281,8 +192,50 @@ echo ""
 
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M3 - Zabbix: website availability"
+echo -e "######################################################################################"$NC
+echo ""
+
+    echo -e $YELLOW"Please, stop webservers on HQ-DMZ-1 and HQ-DMZ-2."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Look at the following output to check if the alert has been written to /monitor/webalert.log:"$NC
+	tail -n 1 /monitor/webalert.log
+	echo -e $YELLOW"Expected output (date should show current time): [2025-08-28 11:20:45] ALERT: Web server https://www.billund.lego.dk is DOWN"$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Look at the following output to check if the alert has been sent to frida:"$NC
+	grep "to=<frida@" /var/log/mail.log
+	echo -e $YELLOW"Expected output (date should show current time): Aug 28 11:20:45 mail postfix/smtp[1234]: 3D2A3401F4: to=<frida@lego.dk>, XXXXX, status=sent (250 OK)"$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $GREEN"OK - Zabbix: website availability - If the process has been succesful"$NC
+	echo -e $RED"FAILED - Zabbix: website availability - If the process has FAILED at some point"$NC
 
 
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M4 - Zabbix: CPU usage"
+echo -e "######################################################################################"$NC
+echo ""
+
+  
+#I don't know how to check this
+
+
+
+	pause 'Press [ENTER] key to continue...'
+	echo -e $GREEN"OK - Zabbix:CPU usage - If the process has been succesful"$NC
+	echo -e $RED"FAILED - Zabbix: CPU usage - If the process has FAILED in some point"$NC
+
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 

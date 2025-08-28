@@ -241,13 +241,13 @@ echo -e $PURPLE"################################################################
 echo "M3 - LDAP server: security"
 echo -e "######################################################################################"$NC
 
-	if [ $(openssl s_client -connect localhost:636 | grep -c "return code: 0 (ok)") = 1 ]
+	if [ $(sleep 5 | openssl s_client -connect localhost:636 -showcerts 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA") = 1 ]
 	then  
 		 echo -e $GREEN"OK - LDAP server: security"$NC
 	else
 		 echo -e $RED"FAILED - LDAP server: security"$NC
 				echo -e $YELLOW"Correct output:"
-				echo -e "Should be return code: 0 (ok)."$NC
+				echo -e "issuer=C = DK, O = Lego APS, CN = Lego APS Intermediate CA"$NC
 	fi
 
 

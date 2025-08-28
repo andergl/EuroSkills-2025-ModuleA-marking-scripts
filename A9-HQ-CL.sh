@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	A3-R-HQ
+#	A9-HQ-CL
 #
 ################## General section ##################
 function pause(){
@@ -20,7 +20,7 @@ NC='\033[0m'
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A1 General configuration (if R-HQ is random machine)"
+echo "Marking A1 General configuration (if HQ-CL is random machine)"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -39,7 +39,7 @@ echo "Hostname, network config and timezone"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( hostname  | grep -ic "R-HQ") = 1 ]
+	if [  $( hostname  | grep -ic "HQ-CL") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
@@ -47,10 +47,10 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			hostname
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct hostname is: R-HQ"$NC
+				echo -e $YELLOW"Correct hostname is: HQ-CL"$NC
 	fi
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.2/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.30.1/24") = 1 ]
+	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.30..*/24") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -58,7 +58,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 203.0.113.2/29 & 10.1.10.1/24 & 10.1.20.1/24 & 10.1.30.1/24"$NC
+				echo -e $YELLOW"Must contain 10.1.30..*/24"$NC
 	fi	
 
 	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
@@ -99,7 +99,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "IF this is a random router!!!"
+echo "IF this is a random server!!!"
 echo "NTP"
 echo -e "######################################################################################"$NC
 echo ""
@@ -122,7 +122,7 @@ echo ""
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A3-R-HQ"
+echo "Marking A9-HQ-CL"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -135,22 +135,15 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "J1 - Firewall: public services"
+echo "M1 - GUI"
 echo -e "######################################################################################"$NC
 echo ""
 
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
+    echo -e $YELLOW"Visual checking. Is there a GUI installed?"$NC
+	echo -e $GREEN"OK - GUI - If there is a GUI"$NC
+	echo -e $RED"FAILED - GUI - If there is NOT a GUI"$NC
 
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
+
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
@@ -158,153 +151,104 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "J2 - Firewall: traffic"
+echo "M2 - LDAP"
 echo -e "######################################################################################"$NC
 echo ""
 
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table filter
-echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
-echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo ""
-echo ""
-echo -e $PURPLE"######################################################################################"
-echo "J3 - Site-to-site VPN: security"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is site-to-site VPN with R-BR?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ and C=DK,O=Lego APS,CN=R-BR"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-
-
-echo ""
-echo ""
-echo -e $PURPLE"######################################################################################"
-echo "J4 - Remote access VPN: security"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
-echo -e $YELLOW"Are your ready?"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
-echo -e $YELLOW"Is a client-to-site VPN with R-HQ?"$NC
-echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ"$NC
-echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
-echo ""
-echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M1 - Firewall: SNAT"
-echo -e "######################################################################################"$NC
-echo ""
-
-echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
-echo -e $YELLOW"Traffic from 10.1.10.0/24, 10.1.20.0/24 and 10.1.30.0/24 towards internet is masqueraded?"$NC
-echo ""
-echo -e $GREEN"IF YES, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M2 - Site-to-site VPN: working"
-echo -e "######################################################################################"$NC
-echo ""
-echo -e $YELLOW"Testing... Please wait."$NC
-
-	if [  $( ping 10.2.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.2.10.0/24.*tun") = 1 ]
+    echo -e $YELLOW"Log in as ella user. If it's not possible, log in as localuser."$NC
+	pause 'Press [ENTER] key to continue...'
+	if [  $( getent passwd | grep -c "ella:" ) = 1 ]  && [  $( cat /etc/passwd | grep -c "ella:" ) = 0 ]
 	then  
-		 echo -e $GREEN"OK - Site-to-site VPN: working"$NC
+		 echo -e $GREEN"OK - IF YOU CAN LOGIN WITH ella, LDAP client"$NC
 	else
-		 echo -e $RED"FAILED - Site-to-site VPN: working"$NC
+		 echo -e $RED"FAILED - LDAP client"$NC
 			echo "-----------------------------------------------------------------"
-			ping 10.2.10.11 -c 4
+			getent passwd
 			echo "-----------------------------------------------------------------"
+			echo -e $YELLOW"You can see ella here. AND (press ENTER)"$NC
+            echo "-----------------------------------------------------------------"
+            pause 'Press [ENTER] key to continue...'
+			cat /etc/passwd
 			echo "-----------------------------------------------------------------"
-			ip r | grep -c "10.2.10.0/24"
-			echo "-----------------------------------------------------------------"
-			echo -e $YELLOW"Correct output: Not 100% packet loss and route to 10.2.10.0/24 through iface tun."$NC
+			echo -e $YELLOW"You CAN'T see ella here."$NC
 	fi
+
+
+
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M3 - Email client"
+echo -e "######################################################################################"$NC
+echo ""
+
+    echo -e $YELLOW"Visual checking. Open Thunderbird email client. Is ella's account configured? Try to send an email to frida@lego.dk."$NC
+	echo -e $GREEN"OK - Email client - If ella's account is configured AND can send an email to frida"$NC
+	echo -e $RED"FAILED - Email client - If ella's account is NOT configured OR can NOT send an email to frida"$NC
 
 
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M4 - Share auto mount"
+echo -e "######################################################################################"$NC
+echo ""
+
+    echo -e $YELLOW"Visual checking. Look at the following output:"$NC
+	ls -la /home/ella/share
+	echo -e $GREEN"OK - Share auto mount - If ella's share directory is present"$NC
+	echo -e $RED"FAILED - Share auto mount - If ella's share directory is NOT present"$NC
 
 
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $PURPLE"######################################################################################"
+echo "M5 - HA DHCP"
+echo -e "######################################################################################"$NC
+echo ""
+
+    echo -e $YELLOW"Look at the following output:"$NC
+	ip a | grep "inet.*global" 
+	echo -e $YELLOW"Should have an IP address like 10.1.30..*/24 dynamically obtained (dynamic)"$NC
+	echo -e $YELLOW"Please, disconnect the wire from HQ-SAM-1 or stop the DHCP server on HQ-SAM-1."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Restart the network and look at the following output:"$NC
+	#### Maybe it's necessary to stop the VM and change the network adapter 
+	ip a | grep "inet.*global" 
+	echo -e $YELLOW"Should have an IP address like 10.1.30..*/24 dynamically obtained (dynamic)"$NC
+	echo -e $YELLOW"Please, disconnect the wire from HQ-SAM-2 or stop the DHCP server on HQ-SAM-2."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Restart the network and look at the following output:"$NC
+	#### Maybe it's necessary to stop the VM and change the network adapter 
+	ip a | grep "inet.*global" 
+	echo -e $YELLOW"Should NOT obtain an IP address"$NC
+	echo -e $YELLOW"Please, connect the wire from HQ-SAM-1 or start the DHCP server on HQ-SAM-1."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $YELLOW"Restart the network and look at the following output:"$NC
+	#### Maybe it's necessary to stop the VM and change the network adapter 
+	ip a | grep "inet.*global" 
+	echo -e $YELLOW"Should have an IP address like 10.1.30..*/24 dynamically obtained (dynamic)"$NC
+	echo -e $YELLOW"Please, connect the wire from HQ-SAM-2 or start the DHCP server on HQ-SAM-2."$NC
+	pause 'Press [ENTER] key to continue...'
+	echo -e $GREEN"OK - HA DHCP - If the process has been succesful"$NC
+	echo -e $RED"FAILED - HA DHCP - If the process has FAILED at some point"$NC
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 
