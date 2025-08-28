@@ -175,7 +175,6 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			echo -e $YELLOW"You can see frida here. AND (press ENTER)"$NC
             echo "-----------------------------------------------------------------"
-            pause 'Press [ENTER] key to continue...'
 			cat /etc/passwd
 			echo "-----------------------------------------------------------------"
 			echo -e $YELLOW"You CAN'T see frida here."$NC

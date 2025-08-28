@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#	A2-HOME
+#	A10-R-BR
 #
 ################## General section ##################
 function pause(){
@@ -20,7 +20,7 @@ NC='\033[0m'
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A1 General configuration (if HOME is random machine)"
+echo "Marking A1 General configuration (if R-BR is random machine)"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -39,7 +39,7 @@ echo "Hostname, network config and timezone"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( hostname  | grep -ic "HOME") = 1 ]
+	if [  $( hostname  | grep -ic "R-BR") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
@@ -47,10 +47,10 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			hostname
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct hostname is: HOME"$NC
+				echo -e $YELLOW"Correct hostname is: R-BR"$NC
 	fi
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.114.50/25") = 1 ] 
+	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.10/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.2.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.2.30.1/24") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -58,7 +58,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 203.0.114.50/25"$NC
+				echo -e $YELLOW"Must contain 203.0.113.10/29 & 10.2.10.1/24 & 10.2.30.1/24"$NC
 	fi	
 
 	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
@@ -99,7 +99,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "IF this is a random server!!!"
+echo "IF this is a random router!!!"
 echo "NTP"
 echo -e "######################################################################################"$NC
 echo ""
@@ -122,7 +122,7 @@ echo ""
 echo ""
 echo ""
 echo -e $BLUE"######################################################################################"
-echo "Marking A2-HOME"
+echo "Marking A10-R-BR"
 echo -e "######################################################################################"$NC
 echo ""
 echo ""
@@ -134,10 +134,95 @@ echo ""
 
 
 
+echo -e $PURPLE"######################################################################################"
+echo "J1 - Firewall: public services"
+echo -e "######################################################################################"$NC
+echo ""
+
+echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo -e $YELLOW"Are your ready?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $YELLOW"See the next output:"$NC
+    nft list table nat
+echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
+echo ""
+echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "J2 - Firewall: traffic"
+echo -e "######################################################################################"$NC
+echo ""
+
+echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo -e $YELLOW"Are your ready?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $YELLOW"See the next output:"$NC
+    nft list table filter
+echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
+echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 
 
+echo -e $PURPLE"######################################################################################"
+echo "M1 - Firewall: SNAT"
+echo -e "######################################################################################"$NC
+echo ""
+
+echo -e $YELLOW"See the next output:"$NC
+    nft list table nat
+echo -e $YELLOW"Traffic from 10.2.10.0/24 and 10.2.30.0/24 towards internet is masqueraded?"$NC
+echo ""
+echo -e $GREEN"IF YES, ITEM iS OK"$NC
+echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M2 - Site-to-site VPN: working"
+echo -e "######################################################################################"$NC
+echo ""
+echo -e $YELLOW"Testing... Please wait."$NC
+
+	if [  $( ping 10.1.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.1.10.0/24.*tun") = 1 ] && [  $( ping 10.1.20.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.1.20.0/24.*tun") = 1 ]
+	then  
+		 echo -e $GREEN"OK - Site-to-site VPN: working"$NC
+	else
+		 echo -e $RED"FAILED - Site-to-site VPN: working"$NC
+			echo "-----------------------------------------------------------------"
+			ping 10.1.10.11 -c 4
+			ping 10.1.20.11 -c 4
+			echo "-----------------------------------------------------------------"
+			echo "-----------------------------------------------------------------"
+			ip r | grep -c "10.1.10.0/24"
+			ip r | grep -c "10.1.20.0/24"
+			echo "-----------------------------------------------------------------"
+			echo -e $YELLOW"Correct output: Not 100% packet loss and routes to 10.1.10.0/24 and 10.1.20.0/24 through iface tun."$NC
+	fi
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 
