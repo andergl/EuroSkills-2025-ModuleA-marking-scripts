@@ -251,15 +251,61 @@ echo -e "#######################################################################
 	fi
 
 
-
-
-
-
-
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
+
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M4 - ZFS array"
+echo -e "######################################################################################"$NC
+echo ""
+
+
+	if [  $( zfs list | grep -c "/share") = 1 ] && [  $( zpool status | grep -c "sd.*ONLINE") = 4 ]
+	then  
+		 echo -e $GREEN"OK - ZFS array"$NC
+	else
+		 echo -e $RED"FAILED - ZFS array"$NC
+			echo "-----------------------------------------------------------------"
+			zfs list
+			zpool status
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct output:'zfs list' should show one ZFS (tank) mounted on /share and 'zpool status' four HDDs (probably sdb, sdc, sdd and sde) on that ZFS (tank)"$NC
+	fi
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M5 - CIFS"
+echo -e "######################################################################################"$NC
+echo ""
+
+
+	if [  $( smbclient //localhost/users -U ella%Passw0rd! -c 'ls' | grep -c "..") = 1 ] && [  $( smbclient //localhost/users -U frida%Passw0rd! -c 'cd ../ella; ls' | grep -c "ACCESS_DENIED") = 1 ]
+	then  
+		 echo -e $GREEN"OK - CIFS"$NC
+	else
+		 echo -e $RED"FAILED - CIFS"$NC
+			echo "-----------------------------------------------------------------"
+			smbclient //localhost/users -U ella%Passw0rd! -c 'ls' | grep -c ".."
+			smbclient //localhost/users -U frida%Passw0rd! -c 'cd ../ella; ls' | grep -c "ACCESS_DENIED"
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct output:First command should show ella's shared directory and second command should show ACCESS_DENIED to ella's directory to frida"$NC
+	fi
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+
 
 
 
