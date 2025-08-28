@@ -1,0 +1,343 @@
+#!/bin/bash
+#
+#	A7-HOME
+#
+################## General section ##################
+function pause(){
+ read -p "$*"
+}
+
+#### COLORS ####
+RED='\033[0;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+################## Marking start ##################
+echo ""
+echo ""
+echo -e $BLUE"######################################################################################"
+echo "Marking A1 General configuration (if HQ-DMZ-1 is random machine)"
+echo -e "######################################################################################"$NC
+echo ""
+echo ""
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+################## Per aspect section ##################
+echo ""
+echo ""
+echo -e $PURPLE"######################################################################################"
+echo "IF this is a random machine!!!"
+echo "Hostname, network config and timezone"
+echo -e "######################################################################################"$NC
+echo ""
+
+	if [  $( hostname  | grep -ic "HQ-DMZ-1") = 1 ]
+	then  
+		 echo -e $GREEN"OK - Check hostname"$NC
+	else
+		 echo -e $RED"FAILED - Check hostname"$NC
+			echo "-----------------------------------------------------------------"
+			hostname
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Correct hostname is: HQ-DMZ-1"$NC
+	fi
+
+	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.11/24") = 1 ] 
+	then  
+		 echo -e $GREEN"OK - Check ip address"$NC
+	else
+		 echo -e $RED"FAILED - Check ip address"$NC
+			echo "-----------------------------------------------------------------"
+			ip a | grep "inet.*global"
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Must contain 10.1.20.11/24"$NC
+	fi	
+
+	if [  $( timedatectl | grep -i "zone" | grep -ic "Europe/Copenhagen" ) = 1 ]
+	then  
+		echo -e $GREEN"OK - Check Timezone"$NC
+	else
+		echo -e $RED"FAILED - Check Timezone"$NC
+			echo "-----------------------------------------------------------------"
+			timedatectl | grep -i "zone"
+				echo "-----------------------------------------------------------------"
+				echo -e $YELLOW"Time zone: Europe/Copenhagen"$NC
+	fi
+ 
+	if [  $( cat /etc/default/keyboard | grep XKBLAYOUT | grep -ic "us" ) = 1 ]
+	then  
+		 echo -e $GREEN"OK - Check keyboard"$NC
+	else
+		 echo -e $RED"FAILED - Check keyboard"$NC
+	fi
+
+	#if [  $( echo $LANG  | grep -ic "en_US.UTF-8" ) = 1 ]
+	#then  
+	#	 echo -e $GREEN"OK - Check Language"$NC
+	#else
+	#	 echo -e $RED"FAILED - Check Language"$NC
+	#		echo "-----------------------------------------------------------------"
+	#		echo $LANG
+	#			echo "-----------------------------------------------------------------"
+	#			echo -e $YELLOW"en_US.UTF-8"$NC
+	#fi
+
+
+echo -e $YELLOW"If every item before is GREEN, point for first aspect."$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "IF this is a random server!!!"
+echo "NTP"
+echo -e "######################################################################################"$NC
+echo ""
+
+echo -e $CYAN"MANUAL CHECKING! MANUAL CHECKING! MANUAL CHECKING!"$NC
+echo ""
+echo ""
+ntpq -p
+echo ""
+#### Review this
+
+echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
+echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo ""
+echo ""
+echo -e $BLUE"######################################################################################"
+echo "Marking A7-HQ-DMZ-1"
+echo -e "######################################################################################"$NC
+echo ""
+echo ""
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+echo ""
+echo -e $PURPLE"######################################################################################"
+echo "M1 - CRL"
+echo -e "######################################################################################"$NC
+
+	if [ $(curl -s http://crl.lego.dk | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ] || [ $(curl -s http://crl.lego.dk | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ]
+	then  
+		 echo -e $GREEN"OK - CRL"$NC
+	else
+		 echo -e $RED"FAILED - CRL"$NC
+			echo "-----------------------------------------------------------------"
+			curl -s http://crl.lego.dk | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
+			curl -s http://crl.lego.dk | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
+			echo "-----------------------------------------------------------------"
+			echo -e $YELLOW"Correct output: One of the two commands should show Subject: C = DK, O = Lego APS, CN = Lego APS..."$NC
+	fi
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M2 - DNS: billund.lego.dk forward zone"
+echo -e "######################################################################################"$NC
+echo ""
+
+	counter=0
+    if [  $( dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20.11" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "www.billund.lego.dk XXXX IN A 10.1.20.11"$NC
+    fi
+	if [  $( dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk.*10.1.20.12" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "mail.billund.lego.dk XXXX IN A 10.1.20.12"$NC
+    fi
+
+	if [  $counter = 2 ]
+	then  
+		 echo -e $GREEN"OK - DNS: billund.lego.dk forward zone"$NC
+	elif [  $counter = 1 ]
+	then 
+		 echo -e $YELLOW"PARTIAL - DNS: billund.lego.dk forward zone - Only one record correct"$NC
+	else
+		 echo -e $RED"FAILED - DNS: billund.lego.dk forward zone"$NC
+				echo -e $YELLOW"Correct output:"
+				echo -e "Some records not exists."$NC
+	fi
+
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M3 - DNS: billund.lego.dk reverse zone"
+echo -e "######################################################################################"$NC
+echo ""
+
+	counter=0
+    if [  $( dig 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11.*www.billund.lego.dk" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig dig 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "10.1.20.11 XXXX IN PTR www.billund.lego.dk"$NC
+    fi
+	if [  $( dig 10.1.20.12 @10.1.20.11 | grep -c "10.1.20.12.*mail.billund.lego.dk" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig dig 10.1.20.12 @10.1.20.11 | grep -c "10.1.20.12"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "10.1.20.12 XXXX IN PTR mail.billund.lego.dk"$NC
+    fi
+
+	if [  $counter = 2 ]
+	then  
+		 echo -e $GREEN"OK - DNS: billund.lego.dk reverse zone"$NC
+	elif [  $counter = 1 ]
+	then 
+		 echo -e $YELLOW"PARTIAL - DNS: billund.lego.dk reverse zone - Only one record correct"$NC
+	else
+		 echo -e $RED"FAILED - DNS: billund.lego.dk reverse zone"$NC
+				echo -e $YELLOW"Correct output:"
+				echo -e "Some records not exists."$NC
+	fi
+	
+	
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+
+
+echo -e $PURPLE"######################################################################################"
+echo "M4 - DNS: Secondary herning.lego.dk zones"
+echo -e "######################################################################################"$NC
+echo ""
+
+	counter=0
+    if [  $( dig www.herning.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20.11" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "www.billund.lego.dk XXXX IN A 10.1.20.11"$NC
+    fi
+	if [  $( dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk.*10.1.20.12" ) = 1 ]
+    then
+        counter=$((counter+1))
+    else
+        echo -e $RED"FAILED"$NC
+		echo "-----------------------------------------------------------------"
+		dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk"
+		echo "-----------------------------------------------------------------"
+		echo -e $YELLOW"Correct output:"
+		echo -e "mail.billund.lego.dk XXXX IN A 10.1.20.12"$NC
+    fi
+
+	if [  $counter = 2 ]
+	then  
+		 echo -e $GREEN"OK - DNS: billund.lego.dk forward zone"$NC
+	elif [  $counter = 1 ]
+	then 
+		 echo -e $YELLOW"PARTIAL - DNS: billund.lego.dk forward zone - Only one record correct"$NC
+	else
+		 echo -e $RED"FAILED - DNS: billund.lego.dk forward zone"$NC
+				echo -e $YELLOW"Correct output:"
+				echo -e "Some records not exists."$NC
+	fi
+
+
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################## Ending section ##################
+echo ""
+echo ""
+echo -e $BLUE"######################################################################################"
+echo "The marking of this VM is finished. The script is terminating."
+echo -e "######################################################################################"$NC
+echo ""
+echo ""

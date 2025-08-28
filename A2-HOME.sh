@@ -287,29 +287,29 @@ echo -e "#######################################################################
 echo ""
 
 	counter=0
-    if [  $( nslookup www.billund.lego.dk 203.0.113.2 | grep -c "203.0.113.2" ) = 2 ]
+    if [  $( dig www.billund.lego.dk @203.0.113.2 | grep -c "www.billund.lego.dk.*203.0.113.2") = 1 ]
     then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
 		echo "-----------------------------------------------------------------"
-		nslookup www.billund.lego.dk 203.0.113.2
+		dig www.billund.lego.dk @203.0.113.2 | grep "www.billund.lego.dk"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "address: 203.0.113.2"$NC
+		echo -e "www.billund.lego.dk XXXX IN A 203.0.113.2"$NC
     fi
-	if [  $( nslookup mail.billund.lego.dk 203.0.113.2 | grep -c "203.0.113.2" ) = 2 ]
+	if [  $( dig mail.billund.lego.dk @203.0.113.2 | grep -c "mail.billund.lego.dk.*203.0.113.2") = 1 ]
     then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
 		echo "-----------------------------------------------------------------"
-		nslookup mail.billund.lego.dk 203.0.113.2
+		dig mail.billund.lego.dk @203.0.113.2 | grep "mail.billund.lego.dk"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "address: 203.0.113.2"$NC
+		echo -e "mail.billund.lego.dk XXXX IN A 203.0.113.2"$NC
     fi
-
+	
 	if [  $counter = 2 ]
 	then  
 		 echo -e $GREEN"OK - DNS: billund.lego.dk public"$NC
@@ -333,16 +333,16 @@ echo -e "#######################################################################
 echo ""
 
 	counter=0
-    if [  $( nslookup www.herning.lego.dk 203.0.113.2 | grep -c "203.0.113.2" ) = 2 ]
+    if [  $( dig www.herning.lego.dk @203.0.113.10 | grep -c "www.herning.lego.dk.*203.0.113.10" ) = 1 ]
     then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
 		echo "-----------------------------------------------------------------"
-		nslookup www.herning.lego.dk 203.0.113.2
+		dig www.herning.lego.dk @203.0.113.10 | grep "www.herning.lego.dk"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "address: 203.0.113.2"$NC
+		echo -e "www.herning.lego.dk XXXX IN A 203.0.113.10"$NC
     fi
 	
 	if [  $counter = 1 ]
