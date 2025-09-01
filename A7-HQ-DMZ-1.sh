@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-DMZ-1") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-DMZ-1") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-DMZ-1"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.11/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.20.11") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.20.11/24"$NC
 	fi	
@@ -140,6 +144,9 @@ echo "M1 - CRL"
 echo -e "######################################################################################"$NC
 
 	if [ $(curl -s http://crl.lego.dk | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ] || [ $(curl -s http://crl.lego.dk | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ]
+	# Maybe use these:
+	# http://crl.lego.dk/root_crl.pem
+	# http://crl.lego.dk/sub_crl.pem
 	then  
 		 echo -e $GREEN"OK - CRL"$NC
 	else
@@ -157,6 +164,12 @@ echo ""
 
 
 
+#######
+# DNS checkings prepared using dig. Can use nslookup instead
+#######
+
+
+
 echo -e $PURPLE"######################################################################################"
 echo "M2 - DNS: billund.lego.dk forward zone"
 echo -e "######################################################################################"$NC
@@ -164,7 +177,10 @@ echo ""
 
 	counter=0
     if [  $( dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20.11" ) = 1 ]
-    then
+    # minimum: r-hq, hq-dc, hq-sam-1, hq-sam-2, hq-dmz-1, hq-dmz-2, www, mail, monitor.
+	# If this is the minimum, should be defined in the TP
+	
+	then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
@@ -213,7 +229,11 @@ echo ""
 
 	counter=0
     if [  $( dig 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11.*www.billund.lego.dk" ) = 1 ]
-    then
+    
+	# minimum:  10.1.10.1, 10.1.10.11, 10.1.10.21, 10.1.10.22, 10.1.20.1, 10.1.20.11, 10.1.20.12, 10.1.30.1
+	# If this is the minimum, should be defined in the TP
+
+	then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
@@ -263,7 +283,11 @@ echo -e "#######################################################################
 echo ""
 
     if [  $( dig www.herning.lego.dk @10.1.20.11 | grep -c "www.herning.lego.dk.*10.2.10.11" ) = 1 ] && [  $( dig 10.2.10.11 @10.1.20.11 | grep -c "10.2.10.11.*www.herning.lego.dk" ) = 1 ] && [ $( grep -r 'zone.*herning.lego.dk' /etc/bind/ | grep -c "slave" ) = 1 ] && [ $( grep -r 'zone.*10.2.10.in-addr.arpa' /etc/bind/ | grep -c "slave" ) = 1 ]
-    then
+    
+	# ALternative: you can see slave zones and database files - HOW?
+
+
+	then
     	 echo -e $GREEN"OK - DNS: Secondary herning.lego.dk zones"$NC
 	else
 		echo -e $RED"FAILED - DNS: Secondary herning.lego.dk zones"$NC
@@ -313,6 +337,9 @@ echo -e "#######################################################################
 echo ""
 
     
+	# Alternative: Web server works in HA with Haproxy, check /etc/haproxy/haproxy.cfg and status of the service 
+	# Haproxy configured and running
+
 	echo -e $YELLOW"Look at the following output. Should say 'Served by HQ-DMZ-X':"$NC
 	curl -I https://localhost | grep "HQ-DMZ"
 	echo -e $YELLOW"Please, stop webserver on HQ-DMZ-1 machine."$NC

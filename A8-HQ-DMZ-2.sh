@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-DMZ-2") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-DMZ-2") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-DMZ-2"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.12/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.20.12") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.20.12/24"$NC
 	fi	
@@ -141,6 +145,8 @@ echo -e "#######################################################################
 echo ""
 
     
+	# Only checks port 587 open. Port 25 open checking missing. Port 465 closed missing.
+
 	if [ $( echo 'QUIT' | nc -w 5 localhost 587 | grep -c 220 ) = 1 ] && [ $( sleep 5 | openssl s_client -connect localhost:587 -starttls smtp 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
 	then  
 		 echo -e $GREEN"OK - Email server: SMTP"$NC
@@ -170,6 +176,9 @@ echo ""
 
     
 	if [ $( echo -e 'CLOSE\nCLOSE\nCLOSE' | nc -w 5 localhost 143 | grep -c OK ) = 1 ] && [ $( sleep 5 | openssl s_client -connect localhost:143 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
+	
+	# Only checks port 143 open. Ports 110, 995 and 993 checking missing ((depends on the 30% change applied, if any)).
+	
 	then  
 		 echo -e $GREEN"OK - Email server: SMTP"$NC
 	else
@@ -223,7 +232,11 @@ echo -e "#######################################################################
 echo ""
 
   
-#I don't know how to check this
+#I don't know how to check this (Ander)
+
+# (Janos)
+# "Zabbix monitors CPU of BR-CL configured by Ansible check on http://monitor.billund.lego.dk:8080/zabbix with Admin use a default password or try zabbix as a password"
+# can see CPU or load metric
 
 
 

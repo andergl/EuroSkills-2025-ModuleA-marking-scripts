@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "BR-SRV") = 1 ]
+	#if [  $( hostname -f | grep -ic "BR-SRV") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: BR-SRV"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.2.10.11/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.2.10.11") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.2.10.11/24"$NC
 	fi	
@@ -134,6 +138,10 @@ echo ""
 
 
 
+#######
+# DNS checkings prepared using dig. Can use nslookup instead
+#######
+
 
 echo -e $PURPLE"######################################################################################"
 echo "M1 - DNS: herning.lego.dk forward zone"
@@ -142,7 +150,11 @@ echo ""
 
 	counter=0
     if [  $( dig www.herning.lego.dk @10.2.10.11 | grep -c "www.herning.lego.dk.*10.2.10.11" ) = 1 ]
-    then
+    
+	# br-srv, r-br, www
+	# # If this is the minimum, should be defined in the TP
+	
+	then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
@@ -175,7 +187,11 @@ echo ""
 
 	counter=0
     if [  $( dig 10.2.10.11 @10.2.10.11 | grep -c "10.2.10.11.*www.herning.lego.dk" ) = 1 ]
-    then
+    
+	# 10.2.10.1, 10.2.10.11, 10.2.30.1
+	# If this is the minimum, should be defined in the TP
+	
+	then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
@@ -260,6 +276,8 @@ echo "M5 - Syslog: DHCP"
 echo -e "######################################################################################"$NC
 echo ""
 
+	# TLS checking missing
+
 	echo -e $YELLOW"Verufy syslog is working, look at the following output:"$NC
 	ss -tlnp | grep 6514
 	echo -e $YELLOW"Expected output example:"$NC
@@ -287,6 +305,8 @@ echo "M5 - Syslog: other"
 echo -e "######################################################################################"$NC
 echo ""
 
+
+	# TLS checking missing
     
 	echo -e $YELLOW"Verufy syslog is working, look at the following output:"$NC
 	ss -tlnp | grep 6514

@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HOME") = 1 ]
+	#if [  $( hostname -f | grep -ic "HOME") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HOME"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.114.50/25") = 1 ] 
+	#if [  $( hostname -I | grep -ic "203.0.114.50") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 203.0.114.50/25"$NC
 	fi	
@@ -139,25 +143,64 @@ echo -e $PURPLE"################################################################
 echo "M1 - Remote access VPN: working"
 echo -e "######################################################################################"$NC
 echo ""
-echo -e $YELLOW"Testing... Please wait."$NC
 
-	if [  $( ping 10.1.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ping 10.1.20.11 -c 4 |grep -c "100% packet loss") = 0 ]
-	then  
-		 echo -e $GREEN"OK - Remote access VPN: working"$NC
-	else
-		 echo -e $RED"FAILED - Remote access VPN: working"$NC
-			echo "-----------------------------------------------------------------"
-			ping 10.1.10.11 -c 4
-			echo "-----------------------------------------------------------------"
-			echo "-----------------------------------------------------------------"
-			ping 10.1.20.11 -c 4
-			echo "-----------------------------------------------------------------"
-			echo -e $YELLOW"Correct output: Not 100% packet loss."$NC
-	fi
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Four different checkings (stronSwan, WireGuard, openvpn & ipsec), one OK is enough."$NC	
 echo ""
+	echo -e $YELLOW"1/4 - strongSwan - Look at the following output:"$NC
+	swanctl --list-sas 
+	echo -e $GREEN"OK - Remote access VPN: working - If connection is up and counters not zero"$NC
+	echo -e $RED"FAILED - Remote access VPN: working - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/4 - WireGuard - Look at the following output:"$NC
+	wg status 
+	echo -e $GREEN"OK - Remote access VPN: working - If connection is up and counters not zero"$NC
+	echo -e $RED"FAILED - Remote access VPN: working - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
+	echo -e $YELLOW"3/4 - openvpn - Look at the following output:"$NC
+	systemctl status openvpn@* 
+	echo -e $GREEN"OK - Remote access VPN: working - If connection is up and counters not zero"$NC
+	echo -e $RED"FAILED - Remote access VPN: working - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
+	echo -e $YELLOW"4/4 - ipsec - Look at the following output:"$NC
+	ipsec status 
+	echo -e $GREEN"OK - Remote access VPN: working - If connection is up and counters not zero"$NC
+	echo -e $RED"FAILED - Remote access VPN: working - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	
+	
+	
+# Ander's alternative	
+#echo -e $YELLOW"Testing... Please wait."$NC	
+	#if [  $( ping 10.1.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ping 10.1.20.11 -c 4 |grep -c "100% packet loss") = 0 ]
+	#then  
+	#	 echo -e $GREEN"OK - Remote access VPN: working"$NC
+	#else
+	#	 echo -e $RED"FAILED - Remote access VPN: working"$NC
+	#		echo "-----------------------------------------------------------------"
+	#		ping 10.1.10.11 -c 4
+	#		echo "-----------------------------------------------------------------"
+	#		echo "-----------------------------------------------------------------"
+	#		ping 10.1.20.11 -c 4
+	#		echo "-----------------------------------------------------------------"
+	#		echo -e $YELLOW"Correct output: Not 100% packet loss."$NC
+	#fi
+#echo ""
+#pause 'Press [ENTER] key to continue...'
+#clear
+#echo ""
 
 
 echo -e $PURPLE"######################################################################################"
@@ -186,27 +229,7 @@ echo ""
 
 
 echo -e $PURPLE"######################################################################################"
-echo "M3 - LDAP client when VPN is down"
-echo -e "######################################################################################"$NC
-echo ""
-
-	echo -e $YELLOW"Disable the Remote Access VPN"$NC
-	echo -e $YELLOW"Try to log in with localadmin user"$NC
-	echo "-----------------------------------------------------------------"
-	echo -e $GREEN"OK - IF YOU CAN LOGIN WITH localadmin, LDAP client when VPN is down"$NC
-	echo -e $RED"FAILED - IF YOU CANNOT LOGIN WITH localadmin, LDAP client when VPN is down"$NC
-	echo "-----------------------------------------------------------------"
-	echo -e $YELLOW"Enable again the Remote Access VPN"$NC
-	echo "-----------------------------------------------------------------"
-
-echo ""
-pause 'Press [ENTER] key to continue...'
-clear
-echo ""
-
-
-echo -e $PURPLE"######################################################################################"
-echo "M4 - Email client"
+echo "M3 - Email client"
 echo -e "######################################################################################"$NC
 echo ""
 
@@ -224,18 +247,37 @@ clear
 echo ""
 
 echo -e $PURPLE"######################################################################################"
-echo "M5 - SFTP client"
+echo "M4 - SFTP client"
 echo -e "######################################################################################"$NC
 echo ""
 
 	echo -e $YELLOW"Open Filezilla client - connection with carl account should be preconfigured"$NC
-	echo -e $YELLOW"Access to SFTP server on BR-SRV"$NC
+	echo -e $YELLOW"Access to SFTP server on BR-SRV and root folder should be the webroot directory"$NC
 	echo "-----------------------------------------------------------------"
-	echo -e $GREEN"OK - IF carl ACCOUNT IS PRECONFIGURED AND YOU CAN ACCESS TO SFTP SERVER ON BR-SRV, SFTP Client"$NC
-	echo -e $RED"FAILED - IF carl ACCOUNT IS NOT CONFIGURED OR YOU CANNOT ACCESS TO SFTP SERVER ON BR-SRV, SFTP Client"$NC
+	echo -e $GREEN"OK SFTP Client - IF carl ACCOUNT IS PRECONFIGURED AND YOU CAN ACCESS TO SFTP SERVER ON BR-SRV and root folder is the webroot directory"$NC
+	echo -e $RED"FAILED SFTP Client - IF carl ACCOUNT IS NOT CONFIGURED OR YOU CANNOT ACCESS TO SFTP SERVER ON BR-SRV OR root folder is not the webroot directory"$NC
 	echo "-----------------------------------------------------------------"
 		
 	
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $PURPLE"######################################################################################"
+echo "M5 - LDAP client when VPN is down"
+echo -e "######################################################################################"$NC
+echo ""
+
+	echo -e $YELLOW"TURN OFF the Remote Access VPN"$NC
+	echo -e $YELLOW"Try to log in with localadmin user"$NC
+	echo "-----------------------------------------------------------------"
+	echo -e $GREEN"OK - IF YOU CAN LOGIN WITH localadmin, LDAP client when VPN is down"$NC
+	echo -e $RED"FAILED - IF YOU CANNOT LOGIN WITH localadmin, LDAP client when VPN is down"$NC
+	echo "-----------------------------------------------------------------"
+	#echo -e $YELLOW"Enable again the Remote Access VPN"$NC
+	#echo "-----------------------------------------------------------------"
+
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
@@ -278,6 +320,10 @@ echo ""
 
 
 
+
+#######
+# DNS checkings prepared using dig. Can use nslookup instead
+#######
 
 
 echo -e $PURPLE"######################################################################################"
@@ -354,6 +400,10 @@ echo ""
 	fi
 
 
+echo ""
+echo ""
+echo -e $YELLOW"TURN ON BACK the Remote Access VPN"$NC
+echo ""
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear

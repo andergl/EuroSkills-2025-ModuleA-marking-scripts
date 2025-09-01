@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-DC") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-DC") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-DC"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.11/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.10.11") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.10.11/24"$NC
 	fi	
@@ -242,6 +246,9 @@ echo "M3 - LDAP server: security"
 echo -e "######################################################################################"$NC
 
 	if [ $(sleep 5 | openssl s_client -connect localhost:636 -showcerts 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA") = 1 ]
+	# Alternative
+	# ldapsearch -x -W -D cn=admin,dc=lego,dc=dk -b dc=lego,dc=dk -H ldaps:///
+	# Certificate error is OK (we only test LDAPS) test with server's FQDN also
 	then  
 		 echo -e $GREEN"OK - LDAP server: security"$NC
 	else

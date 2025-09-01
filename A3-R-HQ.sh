@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "R-HQ") = 1 ]
+	#if [  $( hostname -f | grep -ic "R-HQ") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: R-HQ"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.2/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.20.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.1.30.1/24") = 1 ]
+	#if [  $( hostname -I | grep -ic "203.0.113.2") = 1 ] && [  $( hostname -I | grep -ic "10.1.10.1") = 1 ] && [  $( hostname -I | grep -ic "10.1.20.1") = 1 ] && [  $( hostname -I | grep -ic "10.1.30.1") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 203.0.113.2/29 & 10.1.10.1/24 & 10.1.20.1/24 & 10.1.30.1/24"$NC
 	fi	
@@ -140,6 +144,13 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge whether all the necessary services are accessible from the Internet: "$NC
+echo -e $YELLOW"3 - All port forwarded and exact defined"$NC
+echo -e $YELLOW"2 - Some port forwarded and exact defined"$NC
+echo -e $YELLOW"1 - 1:1 NAT"$NC
+echo -e $YELLOW"0 - not implemented"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -147,8 +158,9 @@ clear
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
+    nft list ruleset
 echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
+echo -e $YELLOW"web (tcp 80, 443), dns (udp 53, tcp 53), email (tcp 25, 587, 993)"$NC
 echo ""
 echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
 echo ""
@@ -163,6 +175,13 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge if the implemented solution allow only the necessary traffic"$NC
+echo -e $YELLOW"3 - drop policy on input AND forward chain and policies applied,"$NC
+echo -e $YELLOW"2 -  drop policy on input or forward chain and policies applied,"$NC
+echo -e $YELLOW"1 - drop policy on input or forward chain or some policies applied"$NC
+echo -e $YELLOW"0 - not implemented"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -170,7 +189,7 @@ clear
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table filter
+    nft list ruleset
 echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
 echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
 echo ""
@@ -187,14 +206,36 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge the security of the implemented solution among four options (stronSwan, WireGuard, openvpn & ipsec) "$NC
+echo -e $YELLOW"3 - Secure protocol with certificate authetication and secure key exchange"$NC
+echo -e $YELLOW"2 - Secure protocol with PSK"$NC
+echo -e $YELLOW"1 - Secure protocol or certificate authentication or secure key exchange"$NC
+echo -e $YELLOW"0 - not implemented or the soultions unsecure"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
+echo -e $YELLOW"See the next output (stronSwan):"$NC
+    swanctl --list-sas
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (WireGuard):"$NC
+    wg status
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (openvpn):"$NC
+    systemctl status openvpn@*
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (ipsec):"$NC
+    ipsec status
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo ""
 echo -e $YELLOW"Is site-to-site VPN with R-BR?"$NC
 echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ and C=DK,O=Lego APS,CN=R-BR"$NC
 echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
@@ -217,14 +258,36 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge the security of the implemented solution among four options (stronSwan, WireGuard, openvpn & ipsec) "$NC
+echo -e $YELLOW"3 - Secure protocol with certificate authetication and secure key exchange"$NC
+echo -e $YELLOW"2 - Secure protocol with PSK"$NC
+echo -e $YELLOW"1 - Secure protocol or certificate authentication or secure key exchange"$NC
+echo -e $YELLOW"0 - not implemented or the soultions unsecure"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
-echo -e $YELLOW"See the next output:"$NC
-    ipsec statusall
+echo -e $YELLOW"See the next output (stronSwan):"$NC
+    swanctl --list-sas
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (WireGuard):"$NC
+    wg status
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (openvpn):"$NC
+    systemctl status openvpn@*
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo -e $YELLOW"See the next output (ipsec):"$NC
+    ipsec status
+echo ""
+pause 'Press [ENTER] key to continue...'
+echo ""
 echo -e $YELLOW"Is a client-to-site VPN with R-HQ?"$NC
 echo -e $YELLOW"PSK or certificate authentication? Are certificates correct on both side? C=DK,O=Lego APS,CN=R-HQ"$NC
 echo -e $YELLOW"Which protocol used? (IKEv2 is the best)"$NC
@@ -243,7 +306,7 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
+    nft list ruleset
 echo -e $YELLOW"Traffic from 10.1.10.0/24, 10.1.20.0/24 and 10.1.30.0/24 towards internet is masqueraded?"$NC
 echo ""
 echo -e $GREEN"IF YES, ITEM iS OK"$NC
@@ -273,6 +336,9 @@ echo -e $YELLOW"Testing... Please wait."$NC
 			echo "-----------------------------------------------------------------"
 			echo -e $YELLOW"Correct output: Not 100% packet loss and route to 10.2.10.0/24 through iface tun."$NC
 	fi
+
+	#OR Check that Site-to-site secure channel is working, try to reach R-BR on of inside interface (10.2.10.1) ping 10.2.10.1
+
 echo ""
 pause 'Press [ENTER] key to continue...'
 clear

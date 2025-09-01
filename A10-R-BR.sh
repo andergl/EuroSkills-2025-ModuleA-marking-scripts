@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "R-BR") = 1 ]
+	#if [  $( hostname -f | grep -ic "R-BR") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: R-BR"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "203.0.113.10/29") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.2.10.1/24") = 1 ] && [  $( ip a | grep "inet.*global" | grep -ic "10.2.30.1/24") = 1 ]
+	#if [  $( hostname -I | grep -ic "203.0.113.10") = 1 ] && [  $( hostname -I | grep -ic "10.2.10.1") = 1 ] && [  $( hostname -I | grep -ic "10.2.30.1") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 203.0.113.10/29 & 10.2.10.1/24 & 10.2.30.1/24"$NC
 	fi	
@@ -134,12 +138,20 @@ echo ""
 
 
 
+
 echo -e $PURPLE"######################################################################################"
 echo "J1 - Firewall: public services"
 echo -e "######################################################################################"$NC
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge whether all the necessary services are accessible from the Internet: "$NC
+echo -e $YELLOW"3 - All port forwarded and exact defined"$NC
+echo -e $YELLOW"2 - Some port forwarded and exact defined"$NC
+echo -e $YELLOW"1 - 1:1 NAT"$NC
+echo -e $YELLOW"0 - not implemented"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -147,8 +159,9 @@ clear
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
+    nft list ruleset
 echo -e $YELLOW"Have PAT and port-forwarding? Only needed service port forwarded to inside?"$NC
+echo -e $YELLOW"web (tcp 80, 443), dns (udp 53, tcp 53)"$NC
 echo ""
 echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
 echo ""
@@ -163,6 +176,13 @@ echo -e "#######################################################################
 echo ""
 
 echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge if the implemented solution allow only the necessary traffic"$NC
+echo -e $YELLOW"3 - drop policy on input AND forward chain and policies applied,"$NC
+echo -e $YELLOW"2 -  drop policy on input or forward chain and policies applied,"$NC
+echo -e $YELLOW"1 - drop policy on input or forward chain or some policies applied"$NC
+echo -e $YELLOW"0 - not implemented"$NC
+echo ""
 echo -e $YELLOW"Are your ready?"$NC
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -170,7 +190,7 @@ clear
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table filter
+    nft list ruleset
 echo -e $YELLOW"Is INPUT and FORWARD policy DROP? Have some rules without everything allow from/to everywhere?"$NC
 echo -e $YELLOW"Does it only allow the necessary traffic?"$NC
 echo ""
@@ -181,13 +201,16 @@ echo ""
 
 
 
+
+
+
 echo -e $PURPLE"######################################################################################"
 echo "M1 - Firewall: SNAT"
 echo -e "######################################################################################"$NC
 echo ""
 
 echo -e $YELLOW"See the next output:"$NC
-    nft list table nat
+    nft list ruleset
 echo -e $YELLOW"Traffic from 10.2.10.0/24 and 10.2.30.0/24 towards internet is masqueraded?"$NC
 echo ""
 echo -e $GREEN"IF YES, ITEM iS OK"$NC

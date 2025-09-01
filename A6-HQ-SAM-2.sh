@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-SAM-2") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-SAM-2") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-SAM-2"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.22/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.10.22") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.10.22/24"$NC
 	fi	
@@ -147,7 +151,7 @@ echo -e "#######################################################################
 	echo "  If yes, or if you have waited:"
 	pause 'Press [ENTER] key to continue...'
 	echo "Look at this output:"
-	ls /backup/users | grep ".txt"
+	ls -la /backup/users | grep ".txt"
 
 	echo -e $GREEN"OK - Backup: If there is a txt file with the random name AND has been updated recently."$NC
     echo -e $RED"FAILED - Backup: f there is NOT a txt file with the random name OR has NOT been updated recently."$NC

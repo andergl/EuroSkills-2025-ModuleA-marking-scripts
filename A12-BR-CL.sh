@@ -39,12 +39,14 @@ echo ""
 
 
 
+
+
 echo -e $PURPLE"######################################################################################"
 echo "M1 - DHCP server"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( ip a | grep "inet.*global" | grep -ic "10.2.30..*/24") = 1 ] 
+	if [  $( ip a | grep "inet.*global.*dynamic" | grep -ic "10.2.30..*/24") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
@@ -52,7 +54,7 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Must contain 10.2.30..*/24"$NC
+				echo -e $YELLOW"Must contain 10.2.30..*/24 and dynamic"$NC
 	fi	
 
 
@@ -94,12 +96,14 @@ echo ""
 	pause 'Press [ENTER] key to continue...'
 
 	if [  $( hostname  | grep -ic "BR-CL") = 1 ]
+	#if [  $( hostname -f | grep -ic "BR-CL") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: BR-CL"$NC
 	fi
@@ -224,6 +228,35 @@ pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
+
+echo -e $PURPLE"######################################################################################"
+echo "J1 - Ansible code style"
+echo -e "######################################################################################"$NC
+echo ""
+
+
+echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Judge the Ansible code style. Take a look to yml files in /ansible "$NC
+echo -e $YELLOW"3 - All code working AND idempotent AND some extra feature implemented (ex. Comments, loop, funcions, vault, etc.)"$NC
+echo -e $YELLOW"2 - All code working AND one of these: idempotent OR some extra feature implemented (ex. Comments, loop, funcions, vault, etc.)"$NC
+echo -e $YELLOW"1 - All code working"$NC
+echo -e $YELLOW"0 - Not all code working or not implemented""$NC
+echo ""
+echo -e $YELLOW"Are your ready?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+
+echo -e $YELLOW"Take a look to yml files in /ansible "$NC
+echo ""
+echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
 
 
 

@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-SAM-1") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-SAM-1") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-SAM-1"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.10.21/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.10.21") = 1 ] 
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.10.21/24"$NC
 	fi	
@@ -138,7 +142,8 @@ echo -e $PURPLE"################################################################
 echo "M1 - Intermediate CA"
 echo -e "######################################################################################"$NC
 
-	if [ $(openssl x509 -in /ca/SUBCA.crt -text -noout | grep -ic "Subject:.*C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
+	if [ $(openssl x509 -in /ca/SUBCA.crt -text -noout | grep -ic "Issuer:.*C = DK.*O = Lego APS.*CN = Lego APS Root CA" ) = 1 ] && [ $(openssl x509 -in /ca/SUBCA.crt -text -noout | grep -ic "Subject:.*C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA" ) = 1 ]
+	# cdp parameter?????
 	then  
 		 echo -e $GREEN"OK - Intermediate CA"$NC
 	else

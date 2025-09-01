@@ -40,23 +40,27 @@ echo -e "#######################################################################
 echo ""
 
 	if [  $( hostname  | grep -ic "HQ-CL") = 1 ]
+	#if [  $( hostname -f | grep -ic "HQ-CL") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check hostname"$NC
 	else
 		 echo -e $RED"FAILED - Check hostname"$NC
 			echo "-----------------------------------------------------------------"
 			hostname
+			#hostname -f
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Correct hostname is: HQ-CL"$NC
 	fi
 
 	if [  $( ip a | grep "inet.*global" | grep -ic "10.1.30..*/24") = 1 ] 
+	#if [  $( hostname -I | grep -ic "10.1.30.") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Check ip address"$NC
 	else
 		 echo -e $RED"FAILED - Check ip address"$NC
 			echo "-----------------------------------------------------------------"
 			ip a | grep "inet.*global"
+			#hostname -I
 				echo "-----------------------------------------------------------------"
 				echo -e $YELLOW"Must contain 10.1.30..*/24"$NC
 	fi	
@@ -131,6 +135,41 @@ echo ""
 pause 'Press [ENTER] key to continue...'
 clear
 echo ""
+
+
+echo -e $PURPLE"######################################################################################"
+echo "J1 - Email security"
+echo -e "######################################################################################"$NC
+echo ""
+
+
+echo -e $CYAN"JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT! JUDGEMENT!"$NC
+echo ""
+echo -e $YELLOW"Check MX, DKIM, DMARC, SPF records."$NC
+echo -e $YELLOW"Show the source of the mail and you need to see the DKIM signature"$NC
+echo -e $YELLOW"nslookup SPF record and _dmarc record and DKIM record (you can see the selector in the mail's source) "$NC
+echo -e $YELLOW"3 - mail signed with DKIM AND DKIM, DMARC and SPF records created in the DNS"$NC
+echo -e $YELLOW"2 - two of these: mail signed with DKIM AND DKIM, DMARC and SPF records created in the DNS"$NC
+echo -e $YELLOW"1 - one of these: mail signed with DKIM AND DKIM, DMARC and SPF records created in the DNS"$NC
+echo -e $YELLOW"0 - not implemented"$NC
+echo ""
+echo -e $YELLOW"Are your ready?"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
+echo -e $YELLOW"See the next output:"$NC
+    ### nslookup SPF record and _dmarc record and DKIM record (you can see the selector in the mail's source)
+echo -e $YELLOW"XXX"$NC
+echo -e $YELLOW"XXX"$NC
+echo ""
+echo -e $CYAN"IT IS A TIME FOR JUDGEMENT!"$NC
+echo ""
+pause 'Press [ENTER] key to continue...'
+clear
+echo ""
+
 
 
 
@@ -217,6 +256,11 @@ echo -e $PURPLE"################################################################
 echo "M5 - HA DHCP"
 echo -e "######################################################################################"$NC
 echo ""
+
+# Alternative:
+# "HA DHCP works: on HQ-SAM-1 turn off NIC, dhclient -r, dhclient, on HQ-SAM-2 turn off nic, dhclient -r, dhclient (not work), turn back HQ-SAM-1, dhclient -r, dhclient, turn back HQ-SAM-2"
+
+
 
     echo -e $YELLOW"Look at the following output:"$NC
 	ip a | grep "inet.*global" 
