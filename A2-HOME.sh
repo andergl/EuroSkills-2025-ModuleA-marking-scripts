@@ -113,15 +113,25 @@ echo ""
 echo ""
 ntpq -p
 echo ""
-#### Review this
-
-echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Two different checkings (chrony and NTPd), one OK is enough."$NC	
 echo ""
-
+	echo -e $YELLOW"1/2 - chrony - Look at the following output:"$NC
+	chronyc sources 
+	echo -e $GREEN"OK - NTP - If peer 203.0.113.1"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/2 - NTPd - Look at the following output:"$NC
+	ntpq -p 
+	echo -e $GREEN"OK - NTP - If peer 203.0.113.1"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
 
 ################## Per aspect section ##################
 echo ""
@@ -208,7 +218,7 @@ echo "M2 - LDAP client"
 echo -e "######################################################################################"$NC
 echo ""
 
-	if [  $( getent passwd | grep -c "frida:" ) = 1 ]  && [  $( cat /etc/passwd | grep -c "frida:" ) = 0 ]
+	if [  $( getent passwd frida | grep -c "frida:" ) = 1 ]  && [  $( cat /etc/passwd | grep -c "frida:" ) = 0 ]
 	then  
 		 echo -e $GREEN"OK - IF YOU CAN LOGIN WITH frida, LDAP client"$NC
 	else

@@ -113,14 +113,25 @@ echo ""
 echo ""
 ntpq -p
 echo ""
-#### Review this
-
-echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Two different checkings (chrony and NTPd), one OK is enough."$NC
 echo ""
+	echo -e $YELLOW"1/2 - chrony - Look at the following output:"$NC
+	chronyc sources 
+	echo -e $GREEN"OK - NTP - If peer 203.0.113.1"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/2 - NTPd - Look at the following output:"$NC
+	ntpq -p 
+	echo -e $GREEN"OK - NTP - If peer 203.0.113.1"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
 
 
 echo ""
@@ -323,13 +334,13 @@ echo -e "#######################################################################
 echo ""
 echo -e $YELLOW"Testing... Please wait."$NC
 
-	if [  $( ping 10.2.10.11 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.2.10.0/24.*tun") = 1 ]
+	if [  $( ping 10.2.10.1 -c 4 |grep -c "100% packet loss") = 0 ] && [  $( ip r | grep -c "10.2.10.0/24.*tun") = 1 ]
 	then  
 		 echo -e $GREEN"OK - Site-to-site VPN: working"$NC
 	else
 		 echo -e $RED"FAILED - Site-to-site VPN: working"$NC
 			echo "-----------------------------------------------------------------"
-			ping 10.2.10.11 -c 4
+			ping 10.2.10.1 -c 4
 			echo "-----------------------------------------------------------------"
 			echo "-----------------------------------------------------------------"
 			ip r | grep -c "10.2.10.0/24"

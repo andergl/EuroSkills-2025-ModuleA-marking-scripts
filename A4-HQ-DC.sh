@@ -113,14 +113,25 @@ echo ""
 echo ""
 ntpq -p
 echo ""
-#### Review this
-
-echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Two different checkings (chrony and NTPd), one OK is enough."$NC
 echo ""
+	echo -e $YELLOW"1/2 - chrony - Look at the following output:"$NC
+	chronyc sources 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/2 - NTPd - Look at the following output:"$NC
+	ntpq -p 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
 
 
 echo ""
@@ -271,7 +282,7 @@ echo -e "#######################################################################
 echo ""
 
 
-	if [  $( zfs list | grep -c "/share") = 1 ] && [  $( zpool status | grep -c "sd.*ONLINE") = 4 ]
+	if [  $( zfs list | grep -c "/share") = 1 ] && [  $( zpool status | grep -c "sd.*ONLINE") = 4 ] && [  $( zfs get encryption | grep -c "encryption") = 2 ]
 	then  
 		 echo -e $GREEN"OK - ZFS array"$NC
 	else
@@ -279,8 +290,9 @@ echo ""
 			echo "-----------------------------------------------------------------"
 			zfs list
 			zpool status
+			zfs get encryption
 				echo "-----------------------------------------------------------------"
-				echo -e $YELLOW"Correct output:'zfs list' should show one ZFS (tank) mounted on /share and 'zpool status' four HDDs (probably sdb, sdc, sdd and sde) on that ZFS (tank)"$NC
+				echo -e $YELLOW"Correct output:'zfs list' should show one ZFS (tank) mounted on /share and 'zpool status' four HDDs (probably sdb, sdc, sdd and sde) on that ZFS (tank) and zfs encrypted"$NC
 	fi
 echo ""
 pause 'Press [ENTER] key to continue...'
@@ -292,7 +304,7 @@ echo -e $PURPLE"################################################################
 echo "M5 - CIFS"
 echo -e "######################################################################################"$NC
 echo ""
-
+#NEED TO REVIEW!
 
 	if [  $( smbclient //localhost/users -U ella%Passw0rd! -c 'ls' | grep -c "..") = 1 ] && [  $( smbclient //localhost/users -U frida%Passw0rd! -c 'cd ../ella; ls' | grep -c "ACCESS_DENIED") = 1 ]
 	then  
