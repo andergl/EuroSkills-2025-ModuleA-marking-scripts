@@ -113,14 +113,25 @@ echo ""
 echo ""
 ntpq -p
 echo ""
-#### Review this
-
-echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Two different checkings (chrony and NTPd), one OK is enough."$NC
 echo ""
+	echo -e $YELLOW"1/2 - chrony - Look at the following output:"$NC
+	chronyc sources 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/2 - NTPd - Look at the following output:"$NC
+	ntpq -p 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
 
 
 echo ""
@@ -143,17 +154,18 @@ echo -e $PURPLE"################################################################
 echo "M1 - CRL"
 echo -e "######################################################################################"$NC
 
-	if [ $(curl -s http://crl.lego.dk | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ] || [ $(curl -s http://crl.lego.dk | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ]
+	if [ $(curl -s http://crl.lego.dk/root_crl.pem | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ] || [ $(curl -s http://crl.lego.dk/sub_crl.pem | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS") = 1 ]
 	# Maybe use these:
 	# http://crl.lego.dk/root_crl.pem
 	# http://crl.lego.dk/sub_crl.pem
+	# Yes I modified, Janos
 	then  
 		 echo -e $GREEN"OK - CRL"$NC
 	else
 		 echo -e $RED"FAILED - CRL"$NC
 			echo "-----------------------------------------------------------------"
-			curl -s http://crl.lego.dk | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
-			curl -s http://crl.lego.dk | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
+			curl -s http://crl.lego.dk/root_crl.pem | openssl crl -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
+			curl -s http://crl.lego.dk/sub_crl.pem | openssl crl -inform DER -noout -text | grep "Issuer:.*C=DK.*O=Lego APS.*CN=Lego APS"
 			echo "-----------------------------------------------------------------"
 			echo -e $YELLOW"Correct output: One of the two commands should show Subject: C = DK, O = Lego APS, CN = Lego APS..."$NC
 	fi
@@ -176,7 +188,7 @@ echo -e "#######################################################################
 echo ""
 
 	counter=0
-    if [  $( dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20.11" ) = 1 ]
+    if [  $( dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk.*10.1.20." ) = 1 ]
     # minimum: r-hq, hq-dc, hq-sam-1, hq-sam-2, hq-dmz-1, hq-dmz-2, www, mail, monitor.
 	# If this is the minimum, should be defined in the TP
 	
@@ -188,18 +200,18 @@ echo ""
 		dig www.billund.lego.dk @10.1.20.11 | grep -c "www.billund.lego.dk"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "www.billund.lego.dk XXXX IN A 10.1.20.11"$NC
+		echo -e "www.billund.lego.dk XXXX IN A 10.1.20."$NC
     fi
-	if [  $( dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk.*10.1.20.12" ) = 1 ]
+	if [  $( dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk.*10.1.20." ) = 1 ]
     then
         counter=$((counter+1))
     else
         echo -e $RED"FAILED"$NC
 		echo "-----------------------------------------------------------------"
-		dig mail.billund.lego.dk @10.1.20.11 | grep -c "mail.billund.lego.dk"
+		dig mail.billund.lego.dk @10.1.20. | grep -c "mail.billund.lego.dk"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "mail.billund.lego.dk XXXX IN A 10.1.20.12"$NC
+		echo -e "mail.billund.lego.dk XXXX IN A 10.1.20."$NC
     fi
 
 	if [  $counter = 2 ]
@@ -228,7 +240,7 @@ echo -e "#######################################################################
 echo ""
 
 	counter=0
-    if [  $( dig 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11.*www.billund.lego.dk" ) = 1 ]
+    if [  $( dig -x 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11.*billund.lego.dk" ) = 1 ]
     
 	# minimum:  10.1.10.1, 10.1.10.11, 10.1.10.21, 10.1.10.22, 10.1.20.1, 10.1.20.11, 10.1.20.12, 10.1.30.1
 	# If this is the minimum, should be defined in the TP
@@ -238,10 +250,10 @@ echo ""
     else
         echo -e $RED"FAILED"$NC
 		echo "-----------------------------------------------------------------"
-		dig dig 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11"
+		dig dig -x 10.1.20.11 @10.1.20.11 | grep -c "10.1.20.11"
 		echo "-----------------------------------------------------------------"
 		echo -e $YELLOW"Correct output:"
-		echo -e "10.1.20.11 XXXX IN PTR www.billund.lego.dk"$NC
+		echo -e "10.1.20.11 XXXX IN PTR *.billund.lego.dk"$NC
     fi
 	if [  $( dig 10.1.20.12 @10.1.20.11 | grep -c "10.1.20.12.*mail.billund.lego.dk" ) = 1 ]
     then

@@ -113,14 +113,25 @@ echo ""
 echo ""
 ntpq -p
 echo ""
-#### Review this
-
-echo -e $GREEN"IF the peer is local AND stratum 2 AND clock set, ITEM iS OK"$NC
-echo -e $RED"BUT IF NOT, ITEM IS FAILED"$NC
 echo ""
-pause 'Press [ENTER] key to continue...'
-clear
+echo -e $YELLOW"Two different checkings (chrony and NTPd), one OK is enough."$NC
 echo ""
+	echo -e $YELLOW"1/2 - chrony - Look at the following output:"$NC
+	chronyc sources 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""	
+	echo -e $YELLOW"2/2 - NTPd - Look at the following output:"$NC
+	ntpq -p 
+	echo -e $GREEN"OK - NTP - If peer 10.1.10.1 or 10.1.20.1 or 10.1.30.1 or r-hq.billund.lego.dk"$NC
+	echo -e $RED"FAILED - NTP - Otherwise"$NC
+	echo ""
+	pause 'Press [ENTER] key to continue...'
+	clear
+	echo ""
 
 
 echo ""
@@ -149,7 +160,7 @@ echo -e "#######################################################################
 	else
 		 echo -e $RED"FAILED - Intermediate CA"$NC
 			echo "-----------------------------------------------------------------"
-			openssl x509 -in /ca/CA.crt -text -noout | grep -ic "Subject:"
+			openssl x509 -in /ca/SUBCA.crt -text -noout | grep -ic "Subject:"
 			echo "-----------------------------------------------------------------"
 			echo -e $YELLOW"Correct output: Should be Subject: C = DK, O = Lego APS, CN = Lego APS Intermediate CA"$NC
 	fi
