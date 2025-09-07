@@ -318,12 +318,11 @@ pause 'Press [ENTER] key to continue...'
 clear
 echo ""
 
-
 echo -e $PURPLE"######################################################################################"
 echo "M5 - HA web server: web server"
 echo -e "######################################################################################"$NC
 echo ""
-
+# Why localhost?
     if [  $( curl -I http://localhost | grep -c "301 Moved Permanently" ) = 1 ] && [  $( curl -I https://localhost | grep -c "200" ) = 1 ] && [  $( sleep 5 | openssl s_client -connect localhost:443 -showcerts 2> /dev/null | grep -c "issuer=C = DK.*O = Lego APS.*CN = Lego APS Intermediate CA.*") = 1 ]
     then
     	 echo -e $GREEN"OK - HA web server: web server"$NC
@@ -351,6 +350,8 @@ echo ""
     
 	# Alternative: Web server works in HA with Haproxy, check /etc/haproxy/haproxy.cfg and status of the service 
 	# Haproxy configured and running
+	# Why localhost?
+
 
 	echo -e $YELLOW"Look at the following output. Should say 'Served by HQ-DMZ-X':"$NC
 	curl -I https://localhost | grep "HQ-DMZ"
